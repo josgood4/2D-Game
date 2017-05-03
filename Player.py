@@ -1,12 +1,17 @@
+from Square import *
+
 class Player():
   N=0
   S=1
   E=2
   W=3
-  def __init__(self, curPos, facing=S):
+  def __init__(self, canvas, curPos, facing, imgs):
+    self.__canvas = canvas
     self.__curPos = curPos   # we need this curPos to be mutable,
                              #   so make sure its a list NOT TUPLE
     self.__facing = facing
+    self.__IMAGES = imgs     # a dictionary of imgs, where keys coorespond
+                             #   to direction player faces
     
   def getCurPos(self):
     return self.__curPos
@@ -18,12 +23,18 @@ class Player():
   def getFacing(self):
     return self.__facing
 
+  def getScaledPos(self):
+    return ((self.__curPos[0]+1)*BLOCK_SIZE, (self.__curPos[1]+1)*BLOCK_SIZE)
+
   def setFacing(self, newFace):
     self.__facing = newFace
 
   def move(self, newRelPos):
     self.__curPos[0] = self.__curPos[0] + newRelPos[0]
     self.__curPos[1] = self.__curPos[1] + newRelPos[1]
+
+  def drawMe(self):
+    self.__canvas.create_image(self.getScaledPos(), image=self.__IMAGES[self.__facing])
 
   # use this to compare a tuple with Player's list
   def isHere(self, pos):
