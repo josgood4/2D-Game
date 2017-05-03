@@ -40,7 +40,7 @@ class LSquare(Square):
 
 class DSquare(Square):
   def __init__(self, tp, loc, img, loc2):
-    self.super(tp, loc, img)
+    Square.__init__(self, tp, loc, img)
     self.__loc2 = loc2   # the location where the door teleports the player
 
   def getLoc2(self):
@@ -51,7 +51,7 @@ class DSquare(Square):
 
 class LDSquare(DSquare, LSquare):
   def __init__(self, tp, loc, img, loc2, isL):
-    self.super(tp, loc, img, loc2)  # SHOULD CHECK THIS LOGIC AT SOME POINT
+    DSquare.__init__(self, tp, loc, img, loc2)  
     self.setLocked(isL)
 
 ##sq = Square(0, (0,0), None)
