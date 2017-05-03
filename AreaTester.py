@@ -3,6 +3,8 @@ from Area import *
 from Player import *
 
 def main():
+  ##COMMENT OUT LINE IN __init__ OF Square CLASS BEFORE RUNNING
+  Square.INIT(0)
   me = Player([2,2])
   Area.setPlayer(me)
   myA = Area()
