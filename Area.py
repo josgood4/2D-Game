@@ -1,5 +1,7 @@
 from Square import *
 
+PADDING = 5
+
 class Area():
   @classmethod
   def setPlayer(cls, plr):
@@ -12,24 +14,48 @@ class Area():
     return self.__areaL[tup[0]][tup[1]]
 
   def initTest(self):
-    LENGTH = 15 #make sure this is >3
-    ROOM2 = LENGTH*3//2-2
-    EXTRA = 5
+    '''
+    # Note: thanks to Python's ability to interpret negative indeces for lists,
+    #   padding is only necessary on the lower left sides of a room/area:
+    #   (but make sure to have a solid wall on the other sides!!!)
+    111111111111111111111112111111
+    1          11111          1111
+    1          11111          1111
+    1          11111          1111
+    1          11111          1111
+    1          11111          1111
+    1          11111          1111
+    1          11111          1111
+    1       v  11111          1111
+    1          11111          1111
+    1          11111          1111
+    111111121111111111111111111111
+    111111111111111111111111111111
+    111111111111111111111111111111
+    111111111111111111111111111111
+    this is the rooms generated with LENGTH=10
+    '''
+    LENGTH = 5 #make sure this is >3
+    ROOM2 = LENGTH*4//2-2
     # room 1:
-    for i in range(LENGTH+EXTRA):
+    for i in range(LENGTH+PADDING):
       self.__areaL.append([])
-      for j in range(LENGTH):
+      for j in range(LENGTH+PADDING):
         self.__areaL[i].append(Square(
-          Square.WALL if (i==0 or i>=LENGTH-1 or j==0 or j>=LENGTH-1) else Square.FLOOR, (i,j), 0))
-    self.__areaL[LENGTH-1][LENGTH-3] = DSquare(Square.DOOR, (LENGTH-1, LENGTH-3), 1, (1,ROOM2+3))
+          Square.WALL if (i==0 or i>LENGTH or j==0 or j>LENGTH) else Square.FLOOR, (i,j), 0))
+    self.__areaL[LENGTH+1][LENGTH-3] = \
+        DSquare(Square.DOOR, (LENGTH+1, LENGTH-3), \
+        1, (1, 2*LENGTH+PADDING-2))
 
     # room 2:
-    for i in range(LENGTH+EXTRA):
-      for j in range(LENGTH, ROOM2+LENGTH+EXTRA):
+    for i in range(LENGTH+PADDING):
+      for j in range(LENGTH+PADDING, 2*LENGTH+2*PADDING):
         self.__areaL[i].append(Square(
-          Square.WALL if (i==0 or i>=LENGTH-1 or j==1 or j>=ROOM2+LENGTH-1) else Square.FLOOR,\
+          Square.WALL if (i==0 or i>LENGTH or j==LENGTH+PADDING or j>2*LENGTH+PADDING) else Square.FLOOR,\
           (i,j), 0))
-    self.__areaL[0][ROOM2+3] = DSquare(Square.DOOR, (0,ROOM2+3), 1, (LENGTH-2, LENGTH-3))
+    self.__areaL[0][2*LENGTH+PADDING-2] = \
+        DSquare(Square.DOOR, (0,2*LENGTH+PADDING-2), \
+                1, (LENGTH, LENGTH-3))
 
   def __str__(self):
     retStr = ""

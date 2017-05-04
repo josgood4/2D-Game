@@ -56,5 +56,5 @@ class Player():
   def __str__(self):
     return "^" if self.__facing==Player.N else \
            "v" if self.__facing==Player.S else \
-           "<" if self.__facing==Player.E else \
+           "<" if self.__facing==Player.W else \
            ">"
