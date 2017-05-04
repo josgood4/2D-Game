@@ -22,9 +22,10 @@ class GUIClass():
               Player.W:PhotoImage(file="images/playerW.gif"), \
               Player.E:PhotoImage(file="images/playerE.gif")}
 
-    IMAGES = {0:PhotoImage(file="images/floor_dirt.gif"), \
-              1:PhotoImage(file="images/wall_rock.gif"), \
-              2:PhotoImage(file="images/floor_dirt.gif")}
+    IMAGES = {"floor_dirt":PhotoImage(file="images/floor_dirt.gif"), \
+              "wall_rock":PhotoImage(file="images/wall_rock.gif"), \
+              "door_ladder_down":PhotoImage(file="images/door_ladder_down.gif"), \
+              "door_ladder_up":PhotoImage(file="images/door_ladder_up.gif")}
 
     Square.INIT(self.__w, IMAGES)
 

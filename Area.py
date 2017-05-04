@@ -41,21 +41,25 @@ class Area():
     for i in range(LENGTH+PADDING):
       self.__areaL.append([])
       for j in range(LENGTH+PADDING):
-        self.__areaL[i].append(Square(
-          Square.WALL if (i==0 or i>LENGTH or j==0 or j>LENGTH) else Square.FLOOR, (i,j), 0))
+        if (i==0 or i>LENGTH or j==0 or j>LENGTH):
+          self.__areaL[i].append(Square((i,j), "wall_rock"))
+        else:
+          self.__areaL[i].append(Square((i,j), "floor_dirt"))
     self.__areaL[LENGTH+1][LENGTH-3] = \
-        DSquare(Square.DOOR, (LENGTH+1, LENGTH-3), \
-        1, (1, 2*LENGTH+PADDING-2))
+        DSquare((LENGTH+1, LENGTH-3), "door_ladder_down", \
+                (1, 2*LENGTH+PADDING-2))
 
     # room 2:
     for i in range(LENGTH+PADDING):
       for j in range(LENGTH+PADDING, 2*LENGTH+2*PADDING):
-        self.__areaL[i].append(Square(
-          Square.WALL if (i==0 or i>LENGTH or j==LENGTH+PADDING or j>2*LENGTH+PADDING) else Square.FLOOR,\
-          (i,j), 0))
+        if (i==0 or i>LENGTH or j==LENGTH+PADDING or j>2*LENGTH+PADDING):
+          self.__areaL[i].append(Square((i,j), "wall_rock"))
+        else:
+          self.__areaL[i].append(Square((i,j), "floor_dirt"))
+          
     self.__areaL[0][2*LENGTH+PADDING-2] = \
-        DSquare(Square.DOOR, (0,2*LENGTH+PADDING-2), \
-                1, (LENGTH, LENGTH-3))
+        DSquare((0,2*LENGTH+PADDING-2), "door_ladder_up", \
+                (LENGTH, LENGTH-3))
 
   def __str__(self):
     retStr = ""
