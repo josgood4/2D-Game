@@ -12,7 +12,6 @@ class Player():
     self.__facing = facing
     self.__IMAGES = imgs     # a dictionary of imgs, where keys coorespond
                              #   to direction player faces
-    
   def getCurPos(self):
     return self.__curPos
 
@@ -23,8 +22,10 @@ class Player():
   def getFacing(self):
     return self.__facing
 
+  #NOTE: SWITCHED X AND Y HERE vvv
+  #  2D_ARRAY[y][x] -> (x,y)
   def getScaledPos(self):
-    return ((self.__curPos[0]+1)*BLOCK_SIZE, (self.__curPos[1]+1)*BLOCK_SIZE)
+    return ((self.__curPos[1]+1)*BLOCK_SIZE, (self.__curPos[0]+1)*BLOCK_SIZE)
 
   def setFacing(self, newFace):
     self.__facing = newFace

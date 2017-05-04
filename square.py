@@ -22,7 +22,7 @@ class Square():
     #comment this ^^ out if running AreaTester.py
 
   def getScaledLoc(self):
-    return ((self.__loc[0]+1)*BLOCK_SIZE, (self.__loc[1]+1)*BLOCK_SIZE)
+    return ((self.__loc[1]+1)*BLOCK_SIZE, (self.__loc[0]+1)*BLOCK_SIZE)
   
   def isWall(self):
     return self.__tp == Square.WALL
