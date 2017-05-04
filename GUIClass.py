@@ -4,18 +4,22 @@ from Area import *
 from Player import *
 import csv
 
+#######################
+# TODO: implement Door functionality with .csv/spreadsheet jazz
+#######################
+
 #Note: BLOCK_SIZE resides in Square.py
 WIN_WIDTH = BLOCK_SIZE*10
 WIN_HEIGHT = BLOCK_SIZE*9
-
-PLR_INIT_POS = [1,1]
-PLR_INIT_FACE = Player.S
 
 AREA_FILE = "areas/AreaTest.csv"
 
 class GUIClass():
   
   def __init__(self):
+    self.__PLR_INIT_POS = [1,1]
+    self.__PLR_INIT_FACE = Player.S
+    
     self.__master = Tk()
     self.__w = Canvas(self.__master, width=WIN_WIDTH, height=WIN_HEIGHT)
     self.__w.pack()
@@ -32,10 +36,13 @@ class GUIClass():
 
     Square.INIT(self.__w, IMAGES)
     
-    self.__me = Player(self.__w, PLR_INIT_POS, PLR_INIT_FACE, PLR_IMAGES)
-    Area.setPlayer(self.__me)
-    self.__myA = Area(self.__loadArea())
+    areaInfo = self.__loadArea()
+    self.__myA = Area(areaInfo[1:])  #first row contains other data
+    self.__processData(areaInfo[0])
     #self.__myA.initTest()
+    
+    self.__me = Player(self.__w, self.__PLR_INIT_POS, self.__PLR_INIT_FACE, PLR_IMAGES)
+    Area.setPlayer(self.__me)
 
     self.__master.tk.call('tk', 'scaling', 2.0)
 
@@ -113,6 +120,24 @@ class GUIClass():
 
     f.close()
     return rows
+
+  # List should be first row of 2D List returned by __loadArea()
+  # Be sure to call __processData AFTER constructing self.__myA
+  def __processData(self, L):
+    playerAttr = L[0].split()
+    self.__PLR_INIT_POS = [int(playerAttr[0]), int(playerAttr[1])]
+    self.__PLR_INIT_FACE = int(playerAttr[2])
+    for cell in L[1:]:
+      pts = cell.split()
+      # Info concerning a locked square:
+      if len(pts)==3:
+        self.__myA.getSquare((int(pts[0]),int(pts[1]))).\
+                      setLocked(False if int(pts[2])==0 else True)
+      # Info concerning a door's loc2:
+      if len(pts)==4:
+        self.__myA.getSquare((int(pts[0]),int(pts[1]))).\
+                      setLoc2((int(pts[2]),int(pts[3])))
+    
   
   '''
   def main():

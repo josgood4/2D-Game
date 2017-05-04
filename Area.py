@@ -12,7 +12,12 @@ class Area():
     for i in range(len(L)):
       self.__areaL.append([])
       for j in range(len(L[0])):
-        self.__areaL[i].append(Square((i,j), L[i][j]))
+        if L[i][j][7:11]==Square.TYP_IMG_L[Square.DOOR]:
+          self.__areaL[i].append(DSquare((i,j), L[i][j]))
+        #elif L[i][j][7:11]==Square.TYP_IMG_L[Square.Loc]:
+        # TODO: implement locked doors
+        else:
+          self.__areaL[i].append(Square((i,j), L[i][j]))
     # copy problems??? - use deepcopy() if necessary
 
   def getSquare(self, tup):

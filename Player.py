@@ -1,6 +1,7 @@
 from Square import *
 
 class Player():
+  # make sure these match the spreadsheet:
   N=0
   S=1
   E=2

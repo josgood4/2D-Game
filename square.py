@@ -61,9 +61,10 @@ class Square():
 
 
 class LSquare(Square):
-  def __init__(self, loc, img, isL):
+  # ALWAYS CALL setLocked() after calling __init__()
+  def __init__(self, loc, img):
     self.super(loc, img)
-    self.__isLocked = isL
+    self.__isLocked = True
 
   def isWall(self):
     return self.__isLocked
@@ -75,12 +76,16 @@ class LSquare(Square):
 
 
 class DSquare(Square):
-  def __init__(self, loc, img, loc2):
+  # ALWAYS CALL setLoc2() AFTER calling __init__()
+  def __init__(self, loc, img):
     Square.__init__(self, loc, img)
-    self.__loc2 = loc2   # the location where the door teleports the player
+    self.__loc2 = [1,1]   # the location where the door teleports the player
 
   def getLoc2(self):
     return self.__loc2
+
+  def setLoc2(self, loc2):
+    self.__loc2 = loc2
 
   def isDoor(self):
     return True
