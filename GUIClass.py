@@ -3,8 +3,9 @@ from Square import *
 from Area import *
 from Player import *
 
-WIN_WIDTH = 600
-WIN_HEIGHT = BLOCK_SIZE*(10+1)
+#Note: BLOCK_SIZE resides in Square.py
+WIN_WIDTH = BLOCK_SIZE*10
+WIN_HEIGHT = BLOCK_SIZE*9
 
 PLR_INIT_POS = [2,5]
 PLR_INIT_FACE = Player.S
@@ -34,8 +35,9 @@ class GUIClass():
 
     self.__master.tk.call('tk', 'scaling', 2.0)
 
-    self.__initAreaDraw()
-
+    #self.__initAreaDraw()
+    self.__update()
+    
     self.__master.bind("<Key>", self.key)
 
     mainloop()
@@ -68,20 +70,27 @@ class GUIClass():
     if self.__myA.getSquare(self.__me.getCurPos()).isDoor():
       self.__me.setCurPos(self.__myA.getSquare(self.__me.getCurPos()).getLoc2())
 
-    self.__initAreaDraw()
+    #self.__initAreaDraw()
+    self.__update()
       
 
   def __initAreaDraw(self):
     for i in range(20):
       for j in range(10):
-        self.__myA.getSquare((j,i)).drawMe()
+        self.__myA.getSquare((j,i)).drawMe((j,i))
 
-    self.__me.drawMe()
+    self.__me.drawMe(self.__me.getCurPos())
 
   def __update(self):
     curPos = self.__me.getCurPos()
-    for i in range(curPos[0]):
-      pass #for j in range
+    i0 = 0
+    for i in range(curPos[0]-4, curPos[0]+5):
+      j0 = 0
+      for j in range(curPos[1]-4, curPos[1]+6):
+        self.__myA.getSquare((j,i)).drawMe((i0, j0))
+        j0 += 1
+      i0 += 1
+    self.__me.drawMe()
 
   def main():
     update()

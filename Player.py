@@ -5,6 +5,7 @@ class Player():
   S=1
   E=2
   W=3
+  PLR_POS_ONSCRN = (4,4)
   def __init__(self, canvas, curPos, facing, imgs):
     self.__canvas = canvas
     self.__curPos = curPos   # we need this curPos to be mutable,
@@ -22,11 +23,6 @@ class Player():
   def getFacing(self):
     return self.__facing
 
-  #NOTE: SWITCHED X AND Y HERE vvv
-  #  2D_ARRAY[y][x] -> (x,y)
-  def getScaledPos(self):
-    return ((self.__curPos[1]+1)*BLOCK_SIZE, (self.__curPos[0]+1)*BLOCK_SIZE)
-
   def setFacing(self, newFace):
     self.__facing = newFace
 
@@ -34,8 +30,14 @@ class Player():
     self.__curPos[0] = self.__curPos[0] + newRelPos[0]
     self.__curPos[1] = self.__curPos[1] + newRelPos[1]
 
+  '''
+  def drawMe(self, tup):
+    self.__canvas.create_image(Square.getScaledLoc(self.__curPos), \
+                               image=self.__IMAGES[self.__facing])
+  '''
   def drawMe(self):
-    self.__canvas.create_image(self.getScaledPos(), image=self.__IMAGES[self.__facing])
+    self.__canvas.create_image(Square.getScaledLoc(Player.PLR_POS_ONSCRN), \
+                               image=self.__IMAGES[self.__facing])
 
   # use this to compare a tuple with Player's list
   def isHere(self, pos):

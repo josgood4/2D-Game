@@ -12,21 +12,22 @@ class Area():
     return self.__areaL[tup[0]][tup[1]]
 
   def initTest(self):
-    LENGTH = 10 #make sure this is >3
+    LENGTH = 15 #make sure this is >3
     ROOM2 = LENGTH*3//2-2
+    EXTRA = 5
     # room 1:
-    for i in range(LENGTH):
+    for i in range(LENGTH+EXTRA):
       self.__areaL.append([])
       for j in range(LENGTH):
         self.__areaL[i].append(Square(
-          Square.WALL if (i==0 or i==LENGTH-1 or j==0 or j==LENGTH-1) else Square.FLOOR, (i,j), 0))
+          Square.WALL if (i==0 or i>=LENGTH-1 or j==0 or j>=LENGTH-1) else Square.FLOOR, (i,j), 0))
     self.__areaL[LENGTH-1][LENGTH-3] = DSquare(Square.DOOR, (LENGTH-1, LENGTH-3), 1, (1,ROOM2+3))
 
     # room 2:
-    for i in range(LENGTH):
-      for j in range(LENGTH, ROOM2+LENGTH):
+    for i in range(LENGTH+EXTRA):
+      for j in range(LENGTH, ROOM2+LENGTH+EXTRA):
         self.__areaL[i].append(Square(
-          Square.WALL if (i==0 or i==LENGTH-1 or j==1 or j==ROOM2+LENGTH-1) else Square.FLOOR,\
+          Square.WALL if (i==0 or i>=LENGTH-1 or j==1 or j>=ROOM2+LENGTH-1) else Square.FLOOR,\
           (i,j), 0))
     self.__areaL[0][ROOM2+3] = DSquare(Square.DOOR, (0,ROOM2+3), 1, (LENGTH-2, LENGTH-3))
 
