@@ -2,6 +2,7 @@ from tkinter import *
 from Square import *
 from Area import *
 from Player import *
+import csv
 
 #Note: BLOCK_SIZE resides in Square.py
 WIN_WIDTH = BLOCK_SIZE*10
@@ -9,6 +10,8 @@ WIN_HEIGHT = BLOCK_SIZE*9
 
 PLR_INIT_POS = [1,1]
 PLR_INIT_FACE = Player.S
+
+AREA_FILE = "areas/AreaTest.csv"
 
 class GUIClass():
   
@@ -22,21 +25,21 @@ class GUIClass():
               Player.W:PhotoImage(file="images/playerW.gif"), \
               Player.E:PhotoImage(file="images/playerE.gif")}
 
-    IMAGES = {"floor_dirt":PhotoImage(file="images/floor_dirt.gif"), \
-              "wall_rock":PhotoImage(file="images/wall_rock.gif"), \
-              "door_ladder_down":PhotoImage(file="images/door_ladder_down.gif"), \
-              "door_ladder_up":PhotoImage(file="images/door_ladder_up.gif")}
+    IMAGES = {"images/floor_dirt.gif":PhotoImage(file="images/floor_dirt.gif"), \
+              "images/wall_rock.gif":PhotoImage(file="images/wall_rock.gif"), \
+              "images/door_ladder_down.gif":PhotoImage(file="images/door_ladder_down.gif"), \
+              "images/door_ladder_up.gif":PhotoImage(file="images/door_ladder_up.gif")}
 
     Square.INIT(self.__w, IMAGES)
-
+    
     self.__me = Player(self.__w, PLR_INIT_POS, PLR_INIT_FACE, PLR_IMAGES)
     Area.setPlayer(self.__me)
-    self.__myA = Area()
-    self.__myA.initTest()
+    self.__myA = Area(self.__loadArea())
+    #self.__myA.initTest()
 
     self.__master.tk.call('tk', 'scaling', 2.0)
 
-    #self.__initAreaDraw()
+    #self.__oldUpdate()
     self.__update()
     
     self.__master.bind("<Key>", self.key)
@@ -74,12 +77,12 @@ class GUIClass():
          
     if self.__myA.getSquare(self.__me.getCurPos()).isDoor():
       self.__me.setCurPos(self.__myA.getSquare(self.__me.getCurPos()).getLoc2())
-    #self.__initAreaDraw()
+    #self.__oldUpdate()
     self.__update()
       
-  # If using __initAreaDraw, switch Player.drawMe() method to alternative method
-  # __initAreaDraw() has a static background with moving player
-  def __initAreaDraw(self):
+  # If using __oldUpdate, switch Player.drawMe() method to alternative method
+  # __oldUpdate() has a static background with moving player
+  def __oldUpdate(self):
     for i in range(20):
       for j in range(10):
         self.__myA.getSquare((i,j)).drawMe((i,j))
@@ -91,15 +94,27 @@ class GUIClass():
     curPos = self.__me.getCurPos()
     ##print(self.__myA)
     i0 = 0
-    for i in range(curPos[0]-4, curPos[0]+5):
+    for i in range(curPos[0]-4, curPos[0]+4):
       j0 = 0
-      for j in range(curPos[1]-4, curPos[1]+6):
+      for j in range(curPos[1]-4, curPos[1]+5):
         ##print(j, ", ", i)
         self.__myA.getSquare((i,j)).drawMe((i0, j0))
         j0 += 1
       i0 += 1
     self.__me.drawMe()
 
+  def __loadArea(self):
+    f = open(AREA_FILE)
+    reader = csv.reader(f)
+    
+    rows = []
+    for line in reader:
+      rows.append(line)
+
+    f.close()
+    return rows
+  
+  '''
   def main():
     update()
     inp = input("What would you like to do? [w,a,s,d] [q]")
@@ -134,5 +149,6 @@ class GUIClass():
       inp = input("What would you like to do? [w,a,s,d] [q]")
 
     #main()
+    '''
 
 GUIClass()

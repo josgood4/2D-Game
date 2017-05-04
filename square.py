@@ -25,8 +25,8 @@ class Square():
   
   def __init__(self, loc, imgTyp):
     self.__loc = loc  #tuple containing coord's of the given square
-    self.__imgTyp = imgTyp
-    self.__tp = Square.TYP_IMG_L.index(self.__imgTyp[:4])
+    self.__imgTyp = imgTyp #full filename for drawing the square
+    self.__tp = Square.TYP_IMG_L.index(self.__imgTyp[7:11])
     #type of square, determined by TYP_IMG 
     #comment this ^^ out if running AreaTester.py
 
