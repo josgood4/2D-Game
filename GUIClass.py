@@ -3,10 +3,11 @@ from Square import *
 from Area import *
 from Player import *
 
-WIN_WIDTH = 600
-WIN_HEIGHT = BLOCK_SIZE*(10+1)
+#Note: BLOCK_SIZE resides in Square.py
+WIN_WIDTH = BLOCK_SIZE*10
+WIN_HEIGHT = BLOCK_SIZE*9
 
-PLR_INIT_POS = [2,5]
+PLR_INIT_POS = [1,1]
 PLR_INIT_FACE = Player.S
 
 class GUIClass():
@@ -23,7 +24,7 @@ class GUIClass():
 
     IMAGES = {0:PhotoImage(file="images/floor_dirt.gif"), \
               1:PhotoImage(file="images/wall_rock.gif"), \
-              2:PhotoImage(file="images/wall_rock.gif")}
+              2:PhotoImage(file="images/floor_dirt.gif")}
 
     Square.INIT(self.__w, IMAGES)
 
@@ -34,13 +35,18 @@ class GUIClass():
 
     self.__master.tk.call('tk', 'scaling', 2.0)
 
-    self.__initAreaDraw()
-
+    #self.__initAreaDraw()
+    self.__update()
+    
     self.__master.bind("<Key>", self.key)
 
-    mainloop()
+    ##TODO: exit mechanism vvv
+    while True:
+      #self.__master.update_idletasks()
+      self.__master.update()
 
   def key(self, event):
+    ##print(self.__me.getCurPos())
     if event.char=="w":
       self.__me.setFacing(Player.N)
       self.__me.move((-1,0))
@@ -67,21 +73,31 @@ class GUIClass():
          
     if self.__myA.getSquare(self.__me.getCurPos()).isDoor():
       self.__me.setCurPos(self.__myA.getSquare(self.__me.getCurPos()).getLoc2())
-
-    self.__initAreaDraw()
+    #self.__initAreaDraw()
+    self.__update()
       
-
+  # If using __initAreaDraw, switch Player.drawMe() method to alternative method
+  # __initAreaDraw() has a static background with moving player
   def __initAreaDraw(self):
     for i in range(20):
       for j in range(10):
-        self.__myA.getSquare((j,i)).drawMe()
+        self.__myA.getSquare((i,j)).drawMe((i,j))
 
-    self.__me.drawMe()
+    self.__me.drawMe(self.__me.getCurPos())
 
+  # __update() moves the background while keeping the player stationary
   def __update(self):
     curPos = self.__me.getCurPos()
-    for i in range(curPos[0]):
-      pass #for j in range
+    ##print(self.__myA)
+    i0 = 0
+    for i in range(curPos[0]-4, curPos[0]+5):
+      j0 = 0
+      for j in range(curPos[1]-4, curPos[1]+6):
+        ##print(j, ", ", i)
+        self.__myA.getSquare((i,j)).drawMe((i0, j0))
+        j0 += 1
+      i0 += 1
+    self.__me.drawMe()
 
   def main():
     update()

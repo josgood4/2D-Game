@@ -21,8 +21,12 @@ class Square():
     self.__imgTyp = tp 
     #comment this ^^ out if running AreaTester.py
 
-  def getScaledLoc(self):
-    return ((self.__loc[1]+1)*BLOCK_SIZE, (self.__loc[0]+1)*BLOCK_SIZE)
+  
+  #NOTE: SWITCHED X AND Y HERE vvv
+  #  2D_ARRAY[y][x] -> (x,y)
+  @classmethod
+  def getScaledLoc(cls, tup):
+    return ((tup[1]+1)*BLOCK_SIZE, (tup[0]+1)*BLOCK_SIZE)
   
   def isWall(self):
     return self.__tp == Square.WALL
@@ -34,9 +38,9 @@ class Square():
     return self.__tp
 
   # Be sure to call Square.INIT() before running
-  def drawMe(self):
-    Square.__canvas.create_image(self.getScaledLoc(), image=Square.__IMAGES[self.__imgTyp])
-    # TO DO: scale self.__loc to canvas size
+  # Draw the square at given coord (un-scaled)
+  def drawMe(self, tup):
+    Square.__canvas.create_image(Square.getScaledLoc(tup), image=Square.__IMAGES[self.__imgTyp])
 
   def __str__(self):
     return str(self.__tp) + " @ " + str(self.__loc)
