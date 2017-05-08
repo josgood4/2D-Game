@@ -27,6 +27,20 @@ class Player():
   def setFacing(self, newFace):
     self.__facing = newFace
 
+  def getFacedPos(self):
+    if self.__facing == Player.N:
+      ##print("N")
+      return (self.__curPos[0]-1,self.__curPos[1])
+    elif self.__facing == Player.S:
+      ##print("S")
+      return (self.__curPos[0]+1, self.__curPos[1])
+    elif self.__facing == Player.W:
+      ##print("W")
+      return (self.__curPos[0], self.__curPos[1]-1)
+    else:
+      ##print("E")
+      return (self.__curPos[0], self.__curPos[1]+1)
+
   def move(self, newRelPos):
     self.__curPos[0] = self.__curPos[0] + newRelPos[0]
     self.__curPos[1] = self.__curPos[1] + newRelPos[1]

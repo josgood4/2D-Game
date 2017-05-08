@@ -14,8 +14,12 @@ class Area():
       for j in range(len(L[0])):
         if L[i][j][7:11]==Square.TYP_IMG_L[Square.DOOR]:
           self.__areaL[i].append(DSquare((i,j), L[i][j]))
-        #elif L[i][j][7:11]==Square.TYP_IMG_L[Square.Loc]:
-        # TODO: implement locked doors
+        elif L[i][j][7:11]==Square.TYP_IMG_L[Square.ITRACT]:
+          self.__areaL[i].append(ISquare((i,j), L[i][j]))
+        elif L[i][j][7:11]==Square.TYP_IMG_L[Square.ACTION]:
+          self.__areaL[i].append(ASquare((i,j), L[i][j]))
+        elif L[i][j][7:11]==Square.TYP_IMG_L[Square.WALL]:
+          self.__areaL[i].append(WSquare((i,j), L[i][j]))
         else:
           self.__areaL[i].append(Square((i,j), L[i][j]))
     # copy problems??? - use deepcopy() if necessary

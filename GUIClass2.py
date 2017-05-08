@@ -4,7 +4,9 @@ from Area import *
 from Player import *
 from tkinter import messagebox
 import csv
-
+#
+# THIS GUIClass2 works with PyGame in Python 2.7
+#
 #####################################################################
 # TODO: implement action (GRASS) Square's             }->locked doors
 #       make better instructions for the spreadsheet/an actual template
