@@ -1,4 +1,5 @@
 from Square import *
+import pygame
 
 class Player():
   # make sure these match the spreadsheet:
@@ -7,13 +8,19 @@ class Player():
   E=2
   W=3
   PLR_POS_ONSCRN = (4,4)
-  def __init__(self, canvas, curPos, facing, imgs):
-    self.__canvas = canvas
+  def __init__(self, screen, curPos, facing, imgs):
+    self.__screen = screen
     self.__curPos = curPos   # we need this curPos to be mutable,
                              #   so make sure its a list NOT TUPLE
     self.__facing = facing
-    self.__IMAGES = imgs     # a dictionary of imgs, where keys coorespond
+    
+    self.__IMAGES = []
+    for eachImage in imgs:
+      self.__IMAGES.append(pygame.image.load(eachImage).convert_alpha())
+                             # a dictionary of imgs, where keys coorespond
                              #   to direction player faces
+    self.__rect = pygame.Rect(Square.getScaledLoc(Player.PLR_POS_ONSCRN), \
+                            (BLOCK_SIZE, BLOCK_SIZE))
   def getCurPos(self):
     return self.__curPos
 
@@ -47,12 +54,12 @@ class Player():
 
   '''
   def drawMe(self, tup):
-    self.__canvas.create_image(Square.getScaledLoc(self.__curPos), \
+    self.__screen.create_image(Square.getScaledLoc(self.__curPos), \
                                image=self.__IMAGES[self.__facing])
   '''
   def drawMe(self):
-    self.__canvas.create_image(Square.getScaledLoc(Player.PLR_POS_ONSCRN), \
-                               image=self.__IMAGES[self.__facing])
+    ##print self.__IMAGES[self.__facing]
+    self.__screen.blit(self.__IMAGES[self.__facing], self.__rect)
 
   # use this to compare a tuple with Player's list
   def isHere(self, pos):

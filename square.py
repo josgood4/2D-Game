@@ -1,4 +1,5 @@
-from tkinter import *
+import pygame
+
 
 BLOCK_SIZE = 50
 SCALE = 2
@@ -19,19 +20,21 @@ class Square():
   TYP_IMG_L[ITRACT] = "inte"
 
   @classmethod
-  def INIT(cls, canvas, imgs):
-    cls.__canvas = canvas # a tkinter Canvas type
-    cls.__IMAGES = imgs   # a dictionary of
-                          #   "file_name.gif":PhotoImage("file_name.gif")
+  def INIT(cls, scrn, imgs):
+    cls.__screen = scrn         
+    cls.__IMAGES = {}
+    for eachImage in imgs:
+      cls.__IMAGES[eachImage] = \
+          pygame.image.load(eachImage).convert_alpha()
+
 
   
-  def __init__(self, loc, imgTyp):
+  def __init__(self, loc, imgStr):
     self.__loc = loc  #tuple containing coord's of the given square
-    self.__imgTyp = imgTyp #full filename for drawing the square
-    #self.__tp = Square.TYP_IMG_L.index(self.__imgTyp[7:11])
-    #type of square, determined by TYP_IMG 
-    #comment this ^^ out if running AreaTester.py
+    self.__image = Square.__IMAGES[imgStr]
 
+  def getImage(self):
+    return self.__image
   
   #NOTE: SWITCHED X AND Y HERE vvv
   #  2D_ARRAY[y][x] -> (x,y)
@@ -54,13 +57,15 @@ class Square():
   def getMessage(self):
     return ""
 
+  '''
   # Be sure to call Square.INIT() before running
   # Draw the square at given coord (un-scaled)
   def drawMe(self, tup):
-    Square.__canvas.create_image(Square.getScaledLoc(tup), image=Square.__IMAGES[self.__imgTyp])
-
+    self.__screen.blit(self.__IMAGES[self.__tp], \
+        pygame.Rect(Square.getScaledLoc(tup), (BLOCK_SIZE, BLOCK_SIZE)))
+  '''
   def __str__(self):
-    return str(self.__imgTyp) + " @ " + str(self.__loc)
+    return str(self.__image) + " @ " + str(self.__loc)
 
 
 class WSquare(Square):

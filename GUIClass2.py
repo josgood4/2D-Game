@@ -1,9 +1,9 @@
-from tkinter import *
 from Square import *
 from Area import *
 from Player import *
-from tkinter import messagebox
+import pygame
 import csv
+import sys
 #
 # THIS GUIClass2 works with PyGame in Python 2.7
 #
@@ -16,8 +16,26 @@ import csv
 #Note: BLOCK_SIZE resides in Square.py
 WIN_WIDTH = BLOCK_SIZE*10
 WIN_HEIGHT = BLOCK_SIZE*9
+BACKGROUND_COLOR = (0,0,0)
 
 AREA_FILE = "areas/AreaTest.csv"
+
+IMG_DIR = "images/"
+
+PLR_IMAGES = ["playerN.gif", "playerS.gif", "playerE.gif", "playerW.gif"]
+for i in range(len(PLR_IMAGES)):
+  PLR_IMAGES[i] = IMG_DIR + PLR_IMAGES[i]
+
+IMAGES = ["floor_dirt.gif", "wall_rock.gif", \
+        "door_ladder_down.gif", "door_ladder_up.gif", \
+        "interactive_sign.gif", "interactive_door.gif", \
+        "door_door.gif", "floor_door_mat.gif", \
+        "wall_black.gif", "door_black.gif", \
+        "wall_table_S.gif", "wall_table_N.gif", \
+        "floor_indoors.gif", "floor_door_mat.gif" \
+        ]
+for i in range(len(IMAGES)):
+  IMAGES[i] = IMG_DIR + IMAGES[i]
 
 class GUIClass():
   
@@ -25,92 +43,75 @@ class GUIClass():
     self.__PLR_INIT_POS = [1,1]
     self.__PLR_INIT_FACE = Player.S
     
-    self.__master = Tk()
-    self.__w = Canvas(self.__master, width=WIN_WIDTH, height=WIN_HEIGHT)
-    self.__w.pack()
+    pygame.init()
+    self.__screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+    #self.__screen.fill(BACKGROUND_COLOR)
 
-    PLR_IMAGES = {Player.N:PhotoImage(file="images/playerN.gif"), \
-              Player.S:PhotoImage(file="images/playerS.gif"), \
-              Player.W:PhotoImage(file="images/playerW.gif"), \
-              Player.E:PhotoImage(file="images/playerE.gif")}
-
-    IMAGES = {"images/floor_dirt.gif":PhotoImage(file="images/floor_dirt.gif"), \
-              "images/wall_rock.gif":PhotoImage(file="images/wall_rock.gif"), \
-              "images/door_ladder_down.gif":PhotoImage(file="images/door_ladder_down.gif"), \
-              "images/door_ladder_up.gif":PhotoImage(file="images/door_ladder_up.gif"), \
-              "images/interactive_sign.gif":PhotoImage(file="images/interactive_sign.gif"), \
-              "images/interactive_door.gif":PhotoImage(file="images/interactive_door.gif"), \
-              "images/door_door.gif":PhotoImage(file="images/door_door.gif"), \
-              "images/floor_door_mat.gif":PhotoImage(file="images/floor_door_mat.gif"), \
-              "images/wall_black.gif":PhotoImage(file="images/wall_black.gif"), \
-              "images/door_black.gif":PhotoImage(file="images/door_black.gif"), \
-              "images/wall_table_S.gif":PhotoImage(file="images/wall_table_S.gif"), \
-              "images/wall_table_N.gif":PhotoImage(file="images/wall_table_N.gif"), \
-              "images/floor_indoors.gif":PhotoImage(file="images/floor_indoors.gif"), \
-              "images/floor_door_mat.gif":PhotoImage(file="images/floor_door_mat.gif"), \
-              }
-
-    Square.INIT(self.__w, IMAGES)
+    Square.INIT(self.__screen, IMAGES)
+    self.__me = Player(self.__screen, self.__PLR_INIT_POS, self.__PLR_INIT_FACE, PLR_IMAGES)
+    Area.INIT(self.__screen, self.__me)
     
     areaInfo = self.__loadArea()
     self.__myA = Area(areaInfo[1:])  #first row contains other data
     self.__processData(areaInfo[0])
     #self.__myA.initTest()
-    
-    self.__me = Player(self.__w, self.__PLR_INIT_POS, self.__PLR_INIT_FACE, PLR_IMAGES)
-    Area.setPlayer(self.__me)
 
-    self.__master.tk.call('tk', 'scaling', 2.0)
-    #self.__oldUpdate()
-    self.__update()
-    self.__master.bind("<Key>", self.key)
+    self.__update() 
 
-    mainloop()
-
-    '''
-    ##TODO: exit mechanism vvv
     while True:
-      #self.__master.update_idletasks()
-      self.__master.update()
-    '''
+      for event in pygame.event.get():
+        # how to quit loop
+        if event.type == pygame.QUIT:
+          #can make this a separate function if desired
+          pygame.display.quit()
+          pygame.quit()
+          sys.exit()
+          
+        if event.type == pygame.KEYDOWN:
+          if event.key == pygame.K_w:
+            ##print 'up'
+            self.__me.setFacing(Player.N)
+            self.__me.move((-1,0))
+            if self.__myA.getSquare(self.__me.getCurPos()).isWall():
+              self.__me.move((1,0))
+            self.__update()
+               
+          if event.key == pygame.K_s:
+            ##print 'down'
+            self.__me.setFacing(Player.S)
+            self.__me.move((1,0))
+            if self.__myA.getSquare(self.__me.getCurPos()).isWall():
+              self.__me.move((-1,0))
+            self.__update()
+               
+          if event.key == pygame.K_a:
+            ##print 'left'
+            self.__me.setFacing(Player.W)
+            self.__me.move((0,-1))
+            if self.__myA.getSquare(self.__me.getCurPos()).isWall():
+              self.__me.move((0,1))
+            self.__update()
+            
+          if event.key == pygame.K_d:
+            ##print 'right'
+            self.__me.setFacing(Player.E)
+            self.__me.move((0,1))
+            if self.__myA.getSquare(self.__me.getCurPos()).isWall():
+              self.__me.move((0,-1))
+            self.__update()
 
-  def key(self, event):
-    ##print(self.__me.getCurPos())
-    if event.char=="w":
-      self.__me.setFacing(Player.N)
-      self.__me.move((-1,0))
-      if self.__myA.getSquare(self.__me.getCurPos()).isWall():
-         self.__me.move((1,0))
-         
-    elif event.char=="s":
-      self.__me.setFacing(Player.S)
-      self.__me.move((1,0))
-      if self.__myA.getSquare(self.__me.getCurPos()).isWall():
-        self.__me.move((-1,0))
-         
-    elif event.char=="a":
-      self.__me.setFacing(Player.W)
-      self.__me.move((0,-1))
-      if self.__myA.getSquare(self.__me.getCurPos()).isWall():
-        self.__me.move((0,1))
-         
-    elif event.char=="d":
-      self.__me.setFacing(Player.E)
-      self.__me.move((0,1))
-      if self.__myA.getSquare(self.__me.getCurPos()).isWall():
-        self.__me.move((0,-1))
-
-    if event.char=="e":
-      if self.__myA.getSquare(self.__me.getFacedPos()).getMessage():
-        ##print(self.__myA.getSquare(self.__me.getFacedPos()).getMessage())
-        messagebox.showinfo("Event", \
-                self.__myA.getSquare(self.__me.getFacedPos()).getMessage())
-         
-    if self.__myA.getSquare(self.__me.getCurPos()).isDoor():
-      self.__me.setCurPos(self.__myA.getSquare(self.__me.getCurPos()).getLoc2())
-    #self.__oldUpdate()
-    self.__update()
-      
+          if event.key == pygame.K_e:
+            print '<A>'
+            if self.__myA.getSquare(self.__me.getFacedPos()).getMessage():
+              print self.__myA.getSquare(self.__me.getFacedPos()).getMessage()
+              ##messagebox.showinfo("Event", \
+                      ##self.__myA.getSquare(self.__me.getFacedPos()).getMessage())
+               
+          if self.__myA.getSquare(self.__me.getCurPos()).isDoor():
+            self.__me.setCurPos(self.__myA.getSquare(self.__me.getCurPos()).getLoc2())
+            self.__update()
+      pygame.display.update()
+        
   # If using __oldUpdate, switch Player.drawMe() method to alternative method
   # __oldUpdate() has a static background with moving player
   def __oldUpdate(self):
@@ -122,16 +123,7 @@ class GUIClass():
 
   # __update() moves the background while keeping the player stationary
   def __update(self):
-    curPos = self.__me.getCurPos()
-    ##print(self.__myA)
-    i0 = 0
-    for i in range(curPos[0]-4, curPos[0]+4):
-      j0 = 0
-      for j in range(curPos[1]-4, curPos[1]+5):
-        ##print(j, ", ", i)
-        self.__myA.getSquare((i,j)).drawMe((i0, j0))
-        j0 += 1
-      i0 += 1
+    self.__myA.drawArea()    
     self.__me.drawMe()
 
   def __loadArea(self):
