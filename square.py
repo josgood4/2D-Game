@@ -40,7 +40,7 @@ class Square():
   #  2D_ARRAY[y][x] -> (x,y)
   @classmethod
   def getScaledLoc(cls, tup):
-    return ((tup[1]+1)*BLOCK_SIZE, (tup[0]+1)*BLOCK_SIZE)
+    return ((tup[1])*BLOCK_SIZE, (tup[0])*BLOCK_SIZE)
   
   def isWall(self):
     return False

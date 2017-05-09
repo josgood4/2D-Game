@@ -10,12 +10,11 @@ import sys
 #####################################################################
 # TODO: implement action (GRASS) Square's             }->locked doors
 #       make better instructions for the spreadsheet/an actual template
-#       switch to pygame()???
 #####################################################################
 
 #Note: BLOCK_SIZE resides in Square.py
-WIN_WIDTH = BLOCK_SIZE*10
-WIN_HEIGHT = BLOCK_SIZE*9
+WIN_WIDTH = BLOCK_SIZE*9
+WIN_HEIGHT = BLOCK_SIZE*8
 BACKGROUND_COLOR = (0,0,0)
 
 AREA_FILE = "areas/AreaTest.csv"
@@ -58,7 +57,9 @@ class GUIClass():
 
     self.__update() 
 
-    while True:
+    eve = False  #short for eve, not to be confused with the event used below vvv
+
+    while not(eve):
       for event in pygame.event.get():
         # how to quit loop
         if event.type == pygame.QUIT:
@@ -101,7 +102,7 @@ class GUIClass():
             self.__update()
 
           if event.key == pygame.K_e:
-            print '<A>'
+            ##print '<A>'
             if self.__myA.getSquare(self.__me.getFacedPos()).getMessage():
               print self.__myA.getSquare(self.__me.getFacedPos()).getMessage()
               ##messagebox.showinfo("Event", \
@@ -111,6 +112,8 @@ class GUIClass():
             self.__me.setCurPos(self.__myA.getSquare(self.__me.getCurPos()).getLoc2())
             self.__update()
       pygame.display.update()
+
+      
         
   # If using __oldUpdate, switch Player.drawMe() method to alternative method
   # __oldUpdate() has a static background with moving player
@@ -124,7 +127,7 @@ class GUIClass():
   # __update() moves the background while keeping the player stationary
   def __update(self):
     self.__myA.drawArea()    
-    self.__me.drawMe()
+    self.__me.drawMe()  # necessary for changes in direction
 
   def __loadArea(self):
     f = open(AREA_FILE)
