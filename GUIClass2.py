@@ -111,33 +111,33 @@ class GUIClass():
           if event.key == pygame.K_e:
             ##print '<A>'
             if self.__myA.getSquare(self.__me.getFacedPos()).getMessage() and not(eve):
-              txt = self.__getMessage()
+              lines = self.__getMessage()
               ##print "'" + txt + "'"
               
               ##print initial line:
               if firstLine:
-                txtImg = self.__myFont.render(txt[0:LINE_LIM], True, (0,0,0))
+                txtImg = self.__myFont.render(lines[0], True, (0,0,0))
                 self.__screen.blit(txtImg, Square.getScaledLoc((6.33, 0.33)))
                 ##print txt[0:LINE_LIM]
-                if 1 < len(txt)/LINE_LIM:
-                  txtImg2 = self.__myFont.render(txt[LINE_LIM:LINE_LIM*2], True, (0,0,0))
+                if len(lines) > 1:
+                  txtImg2 = self.__myFont.render(lines[1], True, (0,0,0))
                   self.__screen.blit(txtImg2, Square.getScaledLoc((7.00, 0.33)))
                   ##print txt[LINE_LIM:LINE_LIM*2]
                 i=2
-                if len(txt)//LINE_LIM > 2:
+                if len(lines) > 2:
                   firstLine = False
-                elif len(txt)//LINE_LIM <= 2:
+                else:
                   eve = True
                 
               #print remaining lines:
               elif not(firstLine):
-                txtImg = self.__myFont.render(txt[LINE_LIM*i:LINE_LIM*(i+1)], True, (0,0,0))
+                txtImg = self.__myFont.render(lines[i], True, (0,0,0))
                 self.__screen.blit(txtImg, Square.getScaledLoc((6.33, 0.33)))
-                if i+1 < len(txt)/LINE_LIM:
-                  txtImg2 = self.__myFont.render(txt[LINE_LIM*(i+1):LINE_LIM*(i+2)], True, (0,0,0))
+                if len(lines) > i+1:
+                  txtImg2 = self.__myFont.render(lines[i+1], True, (0,0,0))
                   self.__screen.blit(txtImg2, Square.getScaledLoc((7.00, 0.33)))
                 i += 2
-                if i >= len(txt)//LINE_LIM:
+                if i >= len(lines):
                   firstLine = True
                   eve = True
               ##print eve
@@ -157,7 +157,7 @@ class GUIClass():
 
   def __getMessage(self):
     txt = self.__myA.getSquare(self.__me.getFacedPos()).getMessage()
-    '''
+    
     wrds = txt.split()
     i = 0
     start = 0
@@ -165,7 +165,8 @@ class GUIClass():
     lines = []
     while i < len(wrds):
       lengths += len(wrds[i]) + 1
-      if lengths/LINE_LIM > len(lines)+1:
+      if lengths/LINE_LIM >= len(lines)+1 or (lengths-1)/LINE_LIM >= len(lines)+1:
+        ##print " ".join(wrds[start:i])
         lines.append(" ".join(wrds[start:i]))
         start = i
       i += 1
@@ -175,6 +176,7 @@ class GUIClass():
     if len(txt)%LINE_LIM != 0:
       txt += " " * (LINE_LIM-len(txt)%LINE_LIM)
     return txt
+    '''
     
         
   # If using __oldUpdate, switch Player.drawMe() method to alternative method
