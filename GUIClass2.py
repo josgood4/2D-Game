@@ -8,14 +8,17 @@ import sys
 # THIS GUIClass2 works with PyGame in Python 2.7
 #
 #####################################################################
-# TODO: implement action (GRASS) Square's             }->locked doors
+# TODO: implement action (GRASS) Square's - lambda expressions }->locked doors
 #       make better instructions for the spreadsheet/an actual template
+#       multi-Area support
+#       hypens in text boxes
 #####################################################################
 
 #Note: BLOCK_SIZE resides in Square.py
 WIN_WIDTH = BLOCK_SIZE*9
 WIN_HEIGHT = BLOCK_SIZE*8
 BACKGROUND_COLOR = (0,0,0)
+LINE_LIM = 28
 
 AREA_FILE = "areas/AreaTest.csv"
 
@@ -44,7 +47,7 @@ class GUIClass():
     
     pygame.init()
     pygame.font.init()
-    self.__myFont = pygame.font.SysFont('Arial', 25) #<-FIX ME
+    self.__myFont = pygame.font.SysFont('PT Serif', 40) #<-FIX ME
     self.__screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
     self.__txtBox = pygame.image.load("images/message_box.gif")
     #self.__screen.fill(BACKGROUND_COLOR)
@@ -61,6 +64,7 @@ class GUIClass():
     self.__update()
 
     eve = False  #short for eve, not to be confused with the event used below vvv
+    firstLine = True
 
     while True:
       for event in pygame.event.get():
@@ -107,13 +111,36 @@ class GUIClass():
           if event.key == pygame.K_e:
             ##print '<A>'
             if self.__myA.getSquare(self.__me.getFacedPos()).getMessage() and not(eve):
-              txtImg = self.__myFont.render( \
-                self.__myA.getSquare(self.__me.getFacedPos()).getMessage(), \
-                False, (0,0,0))
-              self.__screen.blit(self.__txtBox, Square.getScaledLoc((6, 0)))
-              self.__screen.blit(txtImg, Square.getScaledLoc((6.33, 0.33)))
+              txt = self.__getMessage()
+              ##print "'" + txt + "'"
+              
+              ##print initial line:
+              if firstLine:
+                txtImg = self.__myFont.render(txt[0:LINE_LIM], True, (0,0,0))
+                self.__screen.blit(txtImg, Square.getScaledLoc((6.33, 0.33)))
+                ##print txt[0:LINE_LIM]
+                if 1 < len(txt)/LINE_LIM:
+                  txtImg2 = self.__myFont.render(txt[LINE_LIM:LINE_LIM*2], True, (0,0,0))
+                  self.__screen.blit(txtImg2, Square.getScaledLoc((7.00, 0.33)))
+                  ##print txt[LINE_LIM:LINE_LIM*2]
+                i=2
+                if len(txt)//LINE_LIM > 2:
+                  firstLine = False
+                elif len(txt)//LINE_LIM <= 2:
+                  eve = True
+                
+              #print remaining lines:
+              elif not(firstLine):
+                txtImg = self.__myFont.render(txt[LINE_LIM*i:LINE_LIM*(i+1)], True, (0,0,0))
+                self.__screen.blit(txtImg, Square.getScaledLoc((6.33, 0.33)))
+                if i+1 < len(txt)/LINE_LIM:
+                  txtImg2 = self.__myFont.render(txt[LINE_LIM*(i+1):LINE_LIM*(i+2)], True, (0,0,0))
+                  self.__screen.blit(txtImg2, Square.getScaledLoc((7.00, 0.33)))
+                i += 2
+                if i >= len(txt)//LINE_LIM:
+                  firstLine = True
+                  eve = True
               ##print eve
-              eve = True
               
             elif eve:
               ##print eve
@@ -128,7 +155,27 @@ class GUIClass():
 
       pygame.display.update()
 
-      
+  def __getMessage(self):
+    txt = self.__myA.getSquare(self.__me.getFacedPos()).getMessage()
+    '''
+    wrds = txt.split()
+    i = 0
+    start = 0
+    lengths = 0
+    lines = []
+    while i < len(wrds):
+      lengths += len(wrds[i]) + 1
+      if lengths/LINE_LIM > len(lines)+1:
+        lines.append(" ".join(wrds[start:i]))
+        start = i
+      i += 1
+    self.__screen.blit(self.__txtBox, Square.getScaledLoc((6, 0)))
+    return lines
+    '''
+    if len(txt)%LINE_LIM != 0:
+      txt += " " * (LINE_LIM-len(txt)%LINE_LIM)
+    return txt
+    
         
   # If using __oldUpdate, switch Player.drawMe() method to alternative method
   # __oldUpdate() has a static background with moving player
