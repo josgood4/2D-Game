@@ -43,7 +43,10 @@ class GUIClass():
     self.__PLR_INIT_FACE = Player.S
     
     pygame.init()
+    pygame.font.init()
+    self.__myFont = pygame.font.SysFont('Arial', 25) #<-FIX ME
     self.__screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+    self.__txtBox = pygame.image.load("images/message_box.gif")
     #self.__screen.fill(BACKGROUND_COLOR)
 
     Square.INIT(self.__screen, IMAGES)
@@ -55,11 +58,11 @@ class GUIClass():
     self.__processData(areaInfo[0])
     #self.__myA.initTest()
 
-    self.__update() 
+    self.__update()
 
     eve = False  #short for eve, not to be confused with the event used below vvv
 
-    while not(eve):
+    while True:
       for event in pygame.event.get():
         # how to quit loop
         if event.type == pygame.QUIT:
@@ -103,14 +106,26 @@ class GUIClass():
 
           if event.key == pygame.K_e:
             ##print '<A>'
-            if self.__myA.getSquare(self.__me.getFacedPos()).getMessage():
-              print self.__myA.getSquare(self.__me.getFacedPos()).getMessage()
+            if self.__myA.getSquare(self.__me.getFacedPos()).getMessage() and not(eve):
+              txtImg = self.__myFont.render( \
+                self.__myA.getSquare(self.__me.getFacedPos()).getMessage(), \
+                False, (0,0,0))
+              self.__screen.blit(self.__txtBox, Square.getScaledLoc((6, 0)))
+              self.__screen.blit(txtImg, Square.getScaledLoc((6.33, 0.33)))
+              ##print eve
+              eve = True
+              
+            elif eve:
+              ##print eve
+              self.__update()
+              eve = False
               ##messagebox.showinfo("Event", \
                       ##self.__myA.getSquare(self.__me.getFacedPos()).getMessage())
                
           if self.__myA.getSquare(self.__me.getCurPos()).isDoor():
             self.__me.setCurPos(self.__myA.getSquare(self.__me.getCurPos()).getLoc2())
             self.__update()
+
       pygame.display.update()
 
       
