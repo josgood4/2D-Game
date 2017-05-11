@@ -7,6 +7,11 @@ class Player():
   S=1
   E=2
   W=3
+  REL_POS = {N: (-1, 0), S: (1, 0), \
+             W: (0, -1), E: (0, 1)  }
+  
+  ######################################################
+  
   PLR_POS_ONSCRN = (4,4)
   def __init__(self, screen, curPos, facing, imgs):
     self.__screen = screen
@@ -21,19 +26,44 @@ class Player():
                              #   to direction player faces
     self.__rect = pygame.Rect(Square.getScaledLoc(Player.PLR_POS_ONSCRN), \
                             (BLOCK_SIZE, BLOCK_SIZE))
-  def getCurPos(self):
-    return self.__curPos
-
-  def setCurPos(self, newPos):
-    self.__curPos[0] = newPos[0]
-    self.__curPos[1] = newPos[1]
     
+  ######################################################
+    
+  # use this to compare a tuple with Player's curPos
+  def isHere(self, pos):
+    return self.__curPos[0]==pos[0] and self.__curPos[1]==pos[1]
+  
   def getFacing(self):
     return self.__facing
 
   def setFacing(self, newFace):
     self.__facing = newFace
 
+  def getCurPos(self):
+    return self.__curPos
+
+  def setCurPos(self, newPos):
+    self.__curPos[0] = newPos[0]
+    self.__curPos[1] = newPos[1]
+
+  def getRelFacedPos(self):
+    return Player.REL_POS[self.__facing]
+
+  def getInvRelPos(self):
+    return (Player.REL_POS[self.__facing][0]*(-1), \
+            Player.REL_POS[self.__facing][1]*(-1))
+
+  ######################################################
+  
+  def move(self, newRelPos):
+    self.__curPos[0] = self.__curPos[0] + newRelPos[0]
+    self.__curPos[1] = self.__curPos[1] + newRelPos[1]
+
+  def drawMe(self):
+    ##print self.__IMAGES[self.__facing]
+    self.__screen.blit(self.__IMAGES[self.__facing], self.__rect)
+    
+  '''
   def getFacedPos(self):
     if self.__facing == Player.N:
       ##print("N")
@@ -48,24 +78,21 @@ class Player():
       ##print("E")
       return (self.__curPos[0], self.__curPos[1]+1)
 
-  def move(self, newRelPos):
-    self.__curPos[0] = self.__curPos[0] + newRelPos[0]
-    self.__curPos[1] = self.__curPos[1] + newRelPos[1]
+  def getPrevPos(self):
+    if self.__facing == Player.N:
+      return (self.__curPos[0]+1,self.__curPos[1])
+    elif self.__facing == Player.S:
+      return (self.__curPos[0]-1, self.__curPos[1])
+    elif self.__facing == Player.W:
+      return (self.__curPos[0], self.__curPos[1]+1)
+    else:
+      return (self.__curPos[0], self.__curPos[1]-1)
 
-  '''
+  # alternative drawMe
   def drawMe(self, tup):
     self.__screen.create_image(Square.getScaledLoc(self.__curPos), \
                                image=self.__IMAGES[self.__facing])
-  '''
-  def drawMe(self):
-    ##print self.__IMAGES[self.__facing]
-    self.__screen.blit(self.__IMAGES[self.__facing], self.__rect)
 
-  # use this to compare a tuple with Player's list
-  def isHere(self, pos):
-    return self.__curPos[0]==pos[0] and self.__curPos[1]==pos[1]
-
-  '''
   # alternative toString()
   def __str__(self):
     return "Player is at " + str(self.__curPos) + ", facing " + \

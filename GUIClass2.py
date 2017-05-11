@@ -5,13 +5,17 @@ import pygame
 import csv
 import sys
 #
-# THIS GUIClass2 works with PyGame in Python 2.7
+# THIS GUIClass2.py works with PyGame in Python 2.7
 #
 #####################################################################
-# TODO: implement action (GRASS) Square's - lambda expressions }->locked doors
+# TODO: implement action (GRASS) Square's - lambda expressions
+#           ->events: "battle", "cut scene", "item pickup"
+#             ("locked" doors check inventory and
+#                    ifKey() => setWall(False), setMessage("")
+#       Player inventory
 #       make better instructions for the spreadsheet/an actual template
 #       multi-Area support
-#       hypens in text boxes
+#       save state
 #####################################################################
 
 #Note: BLOCK_SIZE resides in Square.py
@@ -39,6 +43,11 @@ IMAGES = ["floor_dirt.gif", "wall_rock.gif", \
 for i in range(len(IMAGES)):
   IMAGES[i] = IMG_DIR + IMAGES[i]
 
+CONTROLS = {pygame.K_w: Player.N, pygame.K_s: Player.S, \
+            pygame.K_a: Player.W, pygame.K_d: Player.E} 
+
+######################################################
+
 class GUIClass():
   
   def __init__(self):
@@ -61,6 +70,8 @@ class GUIClass():
     self.__processData(areaInfo[0])
     #self.__myA.initTest()
 
+    ######################################################
+
     self.__update()
 
     eve = False  #short for eve, not to be confused with the event used below vvv
@@ -76,43 +87,19 @@ class GUIClass():
           sys.exit()
           
         if event.type == pygame.KEYDOWN:
-          if event.key == pygame.K_w:
-            ##print 'up'
-            self.__me.setFacing(Player.N)
-            self.__me.move((-1,0))
-            if self.__myA.getSquare(self.__me.getCurPos()).isWall():
-              self.__me.move((1,0))
-            self.__update()
-               
-          if event.key == pygame.K_s:
-            ##print 'down'
-            self.__me.setFacing(Player.S)
-            self.__me.move((1,0))
-            if self.__myA.getSquare(self.__me.getCurPos()).isWall():
-              self.__me.move((-1,0))
-            self.__update()
-               
-          if event.key == pygame.K_a:
-            ##print 'left'
-            self.__me.setFacing(Player.W)
-            self.__me.move((0,-1))
-            if self.__myA.getSquare(self.__me.getCurPos()).isWall():
-              self.__me.move((0,1))
+          
+          if event.key in CONTROLS:
+            self.__movePlayer(CONTROLS[event.key])
+
+          if self.__myA.getSquare(self.__me.getCurPos()).isDoor():
+            self.__me.setCurPos(self.__myA.getSquare(self.__me.getCurPos()).getLoc2())
             self.__update()
             
-          if event.key == pygame.K_d:
-            ##print 'right'
-            self.__me.setFacing(Player.E)
-            self.__me.move((0,1))
-            if self.__myA.getSquare(self.__me.getCurPos()).isWall():
-              self.__me.move((0,-1))
-            self.__update()
-
           if event.key == pygame.K_e:
             ##print '<A>'
             if self.__myA.getSquare(self.__me.getFacedPos()).getMessage() and not(eve):
               lines = self.__getMessage()
-              ##print "'" + txt + "'"
+              ##print lines
               
               ##print initial line:
               if firstLine:
@@ -136,8 +123,9 @@ class GUIClass():
                 if len(lines) > i+1:
                   txtImg2 = self.__myFont.render(lines[i+1], True, (0,0,0))
                   self.__screen.blit(txtImg2, Square.getScaledLoc((7.00, 0.33)))
+                ##print str(len(lines)) + " " + str(i)
                 i += 2
-                if i >= len(lines):
+                if len(lines) <= i:
                   firstLine = True
                   eve = True
               ##print eve
@@ -148,16 +136,21 @@ class GUIClass():
               eve = False
               ##messagebox.showinfo("Event", \
                       ##self.__myA.getSquare(self.__me.getFacedPos()).getMessage())
-               
-          if self.__myA.getSquare(self.__me.getCurPos()).isDoor():
-            self.__me.setCurPos(self.__myA.getSquare(self.__me.getCurPos()).getLoc2())
-            self.__update()
 
       pygame.display.update()
 
+  ######################################################
+
+  def __movePlayer(self, direction):
+    self.__me.setFacing(direction)
+    self.__me.move(self.__me.getRelFacedPos())
+    if self.__myA.getSquare(self.__me.getCurPos()).isWall():
+      self.__me.move(self.__me.getInvRelPos())
+    self.__update()
+
   def __getMessage(self):
     txt = self.__myA.getSquare(self.__me.getFacedPos()).getMessage()
-    
+    ##print txt
     wrds = txt.split()
     i = 0
     start = 0
@@ -170,6 +163,7 @@ class GUIClass():
         lines.append(" ".join(wrds[start:i]))
         start = i
       i += 1
+    lines.append(" ".join(wrds[start:]))
     self.__screen.blit(self.__txtBox, Square.getScaledLoc((6, 0)))
     return lines
     '''
