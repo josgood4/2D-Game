@@ -1,6 +1,5 @@
 import pygame
 
-
 BLOCK_SIZE = 50
 SCALE = 2
 

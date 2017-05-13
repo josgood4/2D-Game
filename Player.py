@@ -49,6 +49,10 @@ class Player():
   def getRelFacedPos(self):
     return Player.REL_POS[self.__facing]
 
+  def getFacedPos(self):
+    return (Player.REL_POS[self.__facing][0]+self.__curPos[0], \
+            Player.REL_POS[self.__facing][1]+self.__curPos[1])
+
   def getInvRelPos(self):
     return (Player.REL_POS[self.__facing][0]*(-1), \
             Player.REL_POS[self.__facing][1]*(-1))
@@ -62,7 +66,7 @@ class Player():
   def drawMe(self):
     ##print self.__IMAGES[self.__facing]
     self.__screen.blit(self.__IMAGES[self.__facing], self.__rect)
-    
+
   '''
   def getFacedPos(self):
     if self.__facing == Player.N:

@@ -11,7 +11,7 @@ import sys
 # TODO: implement action (GRASS) Square's - lambda expressions
 #           ->events: "battle", "cut scene", "item pickup"
 #             ("locked" doors check inventory and
-#                    ifKey() => setWall(False), setMessage("")
+#                    ifKey() => setWall(False), setMessage(""), changeSquare
 #       Player inventory
 #       make better instructions for the spreadsheet/an actual template
 #       multi-Area support
@@ -65,9 +65,8 @@ class GUIClass():
     self.__me = Player(self.__screen, self.__PLR_INIT_POS, self.__PLR_INIT_FACE, PLR_IMAGES)
     Area.INIT(self.__screen, self.__me)
     
-    areaInfo = self.__loadArea()
-    self.__myA = Area(areaInfo[1:])  #first row contains other data
-    self.__processData(areaInfo[0])
+    self.__myA = Area(self.__loadArea())
+    #self.__myA.processData(areaInfo[0])
     #self.__myA.initTest()
 
     ######################################################
@@ -106,6 +105,7 @@ class GUIClass():
                 txtImg = self.__myFont.render(lines[0], True, (0,0,0))
                 self.__screen.blit(txtImg, Square.getScaledLoc((6.33, 0.33)))
                 ##print txt[0:LINE_LIM]
+                #CONDESE THIS:
                 if len(lines) > 1:
                   txtImg2 = self.__myFont.render(lines[1], True, (0,0,0))
                   self.__screen.blit(txtImg2, Square.getScaledLoc((7.00, 0.33)))
@@ -198,65 +198,7 @@ class GUIClass():
     f.close()
     return rows
 
-  # List should be first row of 2D List returned by __loadArea()
-  # Be sure to call __processData AFTER constructing self.__myA
-  def __processData(self, L):
-    playerAttr = L[0].split()
-    self.__PLR_INIT_POS = [int(playerAttr[0]), int(playerAttr[1])]
-    self.__PLR_INIT_FACE = int(playerAttr[2])
-    for cell in L[1:]:
-      pts = cell.split()
-      # Info concerning a locked square:
-      ##print(pts)
-      if len(pts)==3 and pts[2].isdigit():
-        self.__myA.getSquare((int(pts[0]),int(pts[1]))).\
-                      setLocked(False if int(pts[2])==0 else True)
-      if len(pts)>=3 and not(pts[2].isdigit()):
-        ##print(" ".join(pts[2:]), self.__myA.getSquare((int(pts[0]),int(pts[1]))))
-        self.__myA.getSquare((int(pts[0]),int(pts[1]))).setMessage(" ".join(pts[2:]))
-        ##print(self.__myA.getSquare((int(pts[0]),int(pts[1]))).getMessage())
-        
-      # Info concerning a door's loc2:
-      if len(pts)==4 and pts[2].isdigit() and pts[3].isdigit():
-        self.__myA.getSquare((int(pts[0]),int(pts[1]))).\
-                      setLoc2((int(pts[2]),int(pts[3])))
-    
-  
-  '''
-  def main():
-    update()
-    inp = input("What would you like to do? [w,a,s,d] [q]")
-    while inp != "q":
-      if inp=="w":
-        self.__me.setFacing(Player.N)
-        self.__me.move((-1,0))
-        ##print("u" + str(self.__me.getCurPos()))
-        if self.__myA.getSquare(self.__me.getCurPos()).isWall():
-          self.__me.move((1,0))
-      elif event.char=="s":
-        self.__me.setFacing(Player.S)
-        self.__me.move((1,0))
-        ##print(self.__me.getCurPos())
-        if self.__myA.getSquare(self.__me.getCurPos()).isWall():
-          self.__me.move((-1,0))
-      elif event.char=="a":
-        self.__me.setFacing(Player.E)
-        self.__me.move((0,-1))
-        ##print(self.__me.getCurPos())
-        if self.__myA.getSquare(self.__me.getCurPos()).isWall():
-          self.__me.move((0,1))    
-      elif event.char=="d":
-        self.__me.setFacing(Player.W)
-        self.__me.move((0,1))
-        ##print(self.__me.getCurPos())
-        if self.__myA.getSquare(self.__me.getCurPos()).isWall():
-          self.__me.move((0,-1))
-      if myA.getSquare(self.__me.getCurPos()).isDoor():
-        self.__me.setCurPos(myA.getSquare(self.__me.getCurPos()).getLoc2())
-      update()
-      inp = input("What would you like to do? [w,a,s,d] [q]")
 
-    #main()
-    '''
+
 
 GUIClass()
