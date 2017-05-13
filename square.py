@@ -9,14 +9,6 @@ class Square():
   DOOR = 2
   ACTION = 3
   ITRACT = 4
-  # Squares will be identified by their corresponding filename
-  #   MAKE SURE ANY Square IMAGES START WITH ONE OF THE FOLLOWING
-  TYP_IMG_L = ["", "", "", "", "", ""]
-  TYP_IMG_L[FLOOR] = "floo"
-  TYP_IMG_L[WALL] = "wall"
-  TYP_IMG_L[DOOR] = "door"
-  TYP_IMG_L[ACTION] = "acti"
-  TYP_IMG_L[ITRACT] = "inte"
 
   @classmethod
   def INIT(cls, scrn, imgs):
@@ -26,7 +18,13 @@ class Square():
       cls.__IMAGES[eachImage] = \
           pygame.image.load(eachImage).convert_alpha()
 
+  #NOTE: SWITCHED X AND Y HERE vvv
+  #  2D_ARRAY[y][x] -> (x,y)
+  @classmethod
+  def getScaledLoc(cls, tup):
+    return ((tup[1])*BLOCK_SIZE, (tup[0])*BLOCK_SIZE)
 
+  ######################################################
   
   def __init__(self, loc, imgStr):
     self.__loc = loc  #tuple containing coord's of the given square
@@ -35,23 +33,11 @@ class Square():
   def getImage(self):
     return self.__image
   
-  #NOTE: SWITCHED X AND Y HERE vvv
-  #  2D_ARRAY[y][x] -> (x,y)
-  @classmethod
-  def getScaledLoc(cls, tup):
-    return ((tup[1])*BLOCK_SIZE, (tup[0])*BLOCK_SIZE)
-  
   def isWall(self):
     return False
 
   def isDoor(self):
     return False
-
-  def getType(self):
-    return self.__tp
-
-  def getImgTyp(self):
-    return self.__imgTyp
 
   def getMessage(self):
     return ""
@@ -66,11 +52,13 @@ class Square():
   def __str__(self):
     return str(self.__image) + " @ " + str(self.__loc)
 
+######################################################
 
 class WSquare(Square):
   def isWall(self):
     return True
 
+######################################################
 
 class ISquare(Square):
   # ALWAYS CALL setLocked() after calling __init__()
@@ -90,6 +78,7 @@ class ISquare(Square):
   def getMessage(self):
     return self.__message
 
+######################################################
 
 class DSquare(Square):
   # ALWAYS CALL setLoc2() AFTER calling __init__()
@@ -105,12 +94,4 @@ class DSquare(Square):
 
   def isDoor(self):
     return True
-
-  
-
-
-
-
-##sq = Square(0, (0,0), None)
-##print(sq)
 

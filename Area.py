@@ -4,32 +4,35 @@ PADDING = 5
 
 class Area():
   @classmethod
-  def INIT(cls, scrn, plr):
+  def INIT(cls, scrn, plr, imgs):
     cls.__screen = scrn
     cls.__player = plr
+    cls.__imgs = imgs
+    # Squares will be identified by their corresponding filename
+    #   MAKE SURE ANY Square IMAGES START WITH ONE OF THE FOLLOWING
+    TYP_IMG_L = {"floo":(lambda x,y,img:  Square((x,y), img)), \
+                 "wall":(lambda x,y,img: WSquare((x,y), img)), \
+                 "door":(lambda x,y,img: DSquare((x,y), img)), \
+                 "acti":(lambda x,y,img: ASquare((x,y), img)), \
+                 "inte":(lambda x,y,img: ISquare((x,y), img))  }
+    cls.__IMG_CONSTR_DICT = {}
+    for img in cls.__imgs:
+      cls.__IMG_CONSTR_DICT[img] = TYP_IMG_L[img[7:11]]
+    # IMG_CONSTR_DICT maps the name of every image file
+    #    to its corresponding constructor
 
   def __init__(self, L):
-    # Setting up Square's:
+    # Setting up the Squares:
     L_SQUARE = L[1:] #ignore first row, as that holds other data
-    ##print L_SQUARE
     self.__absAreaL = []
     for i in range(len(L_SQUARE)):   
       self.__absAreaL.append([])
       for j in range(len(L_SQUARE[0])):
-        ##print i, " ", j
-        if L_SQUARE[i][j][7:11]==Square.TYP_IMG_L[Square.DOOR]:
-          self.__absAreaL[i].append(DSquare((i,j), L_SQUARE[i][j]))
-        elif L_SQUARE[i][j][7:11]==Square.TYP_IMG_L[Square.ITRACT]:
-          self.__absAreaL[i].append(ISquare((i,j), L_SQUARE[i][j]))
-        elif L_SQUARE[i][j][7:11]==Square.TYP_IMG_L[Square.ACTION]:
-          self.__absAreaL[i].append(ASquare((i,j), L_SQUARE[i][j]))
-        elif L_SQUARE[i][j][7:11]==Square.TYP_IMG_L[Square.WALL]:
-          ##print WSquare((i,j), L[i][j])
-          self.__absAreaL[i].append(WSquare((i,j), L_SQUARE[i][j]))
-        else:
-          self.__absAreaL[i].append(Square((i,j), L_SQUARE[i][j]))
-
-        self.__rects = []
+        self.__absAreaL[i].append(
+          Area.__IMG_CONSTR_DICT[L_SQUARE[i][j]](i, j, L_SQUARE[i][j]))
+        
+    # Setting up the Rects:
+    self.__rects = []
       for i in range(9):    #height of screen (in blocks)
         self.__rects.append([])
         for j in range(10): #width of screen (in blocks)
