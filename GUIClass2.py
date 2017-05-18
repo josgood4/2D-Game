@@ -91,45 +91,15 @@ class GUIClass():
           sys.exit()
           
         if event.type == pygame.KEYDOWN:
-          
+
+          # for moving the player:
           if event.key in CONTROLS:
             self.__movePlayer(CONTROLS[event.key])
-            
+
+          # for interacting with signs, etc:
           if event.key == pygame.K_e:
-            ##print '<A>'
-            if self.__myA.getSquare(self.__me.getFacedPos()).getMessage() and not(eve):
-              lines = self.__getMessage()
-              ##print lines
-              
-              ##print initial line:
-              if firstLine:
-                txtImg = self.__myFont.render(lines[0], True, (0,0,0))
-                self.__screen.blit(txtImg, Square.getScaledLoc((6.33, 0.33)))
-                ##print txt[0:LINE_LIM]
-                #CONDESE THIS:
-                if len(lines) > 1:
-                  txtImg2 = self.__myFont.render(lines[1], True, (0,0,0))
-                  self.__screen.blit(txtImg2, Square.getScaledLoc((7.00, 0.33)))
-                  ##print txt[LINE_LIM:LINE_LIM*2]
-                i=2
-                if len(lines) > 2:
-                  firstLine = False
-                else:
-                  eve = True
-                
-              #print remaining lines:
-              elif not(firstLine):
-                txtImg = self.__myFont.render(lines[i], True, (0,0,0))
-                self.__screen.blit(txtImg, Square.getScaledLoc((6.33, 0.33)))
-                if len(lines) > i+1:
-                  txtImg2 = self.__myFont.render(lines[i+1], True, (0,0,0))
-                  self.__screen.blit(txtImg2, Square.getScaledLoc((7.00, 0.33)))
-                ##print str(len(lines)) + " " + str(i)
-                i += 2
-                if len(lines) <= i:
-                  firstLine = True
-                  eve = True
-              ##print eve
+            if self.__myA.getSquare(self.__me.getFacedPos()).getMessage():
+              self.__txtBoxLogic()
               
             elif eve:
               ##print eve
@@ -178,6 +148,34 @@ class GUIClass():
 
   ######################################################
 
+  def __txtBoxLogic(self):
+    lines = self.__getMessage()
+    self.__dispMessage(lines, 0)
+    i = 2
+    if len(lines) < i:
+      return None
+    while len(lines) > i:
+      for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
+          self.__dispMessage(lines, i)
+          i += 2
+    done = False
+    while not(done):
+      for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
+          self.__update()
+          done = True
+
+  def __dispMessage(self, lines, idx):
+    self.__screen.blit(self.__txtBox, Square.getScaledLoc((6, 0)))
+    txtImg = self.__myFont.render(lines[idx], True, (0,0,0))
+    self.__screen.blit(txtImg, Square.getScaledLoc((6.33, 0.33)))
+    if len(lines) > idx+1:
+      txtImg2 = self.__myFont.render(lines[idx+1], True, (0,0,0))
+      self.__screen.blit(txtImg2, Square.getScaledLoc((7.00, 0.33)))
+    pygame.display.update()
+    
+
   def __getMessage(self):
     txt = self.__myA.getSquare(self.__me.getFacedPos()).getMessage()
     ##print txt
@@ -193,7 +191,6 @@ class GUIClass():
         start = i
       i += 1
     lines.append(" ".join(wrds[start:]))
-    self.__screen.blit(self.__txtBox, Square.getScaledLoc((6, 0)))
     return lines
 
 

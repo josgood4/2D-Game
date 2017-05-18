@@ -18,6 +18,8 @@ MISC_FUNC = {"LOCK":(lambda self,i,j,b: \
                      self.getSquare((i,j)).setLoc2((int(tup[0]), int(tup[1]))))
              }
 
+  ######################################################################
+
 class Area():
   
   @classmethod
@@ -78,6 +80,7 @@ class Area():
                            self.__rects[i0][j0])
         j0 += 1
       i0 += 1
+      
 
   def getSquare(self, tup):
     return self.__absAreaL[tup[0]][tup[1]]
