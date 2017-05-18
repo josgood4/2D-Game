@@ -9,23 +9,27 @@ class Player():
   W=3
   REL_POS = {N: (-1, 0), S: (1, 0), \
              W: (0, -1), E: (0, 1)  }
+  DEFAULT_INIT_POS = [1,1]
+  DEFAULT_INIT_FACING = S
+  PLR_POS_ONSCRN = (4,4)
   
   ######################################################
-  
-  PLR_POS_ONSCRN = (4,4)
-  def __init__(self, screen, curPos, facing, imgs):
-    self.__screen = screen
-    self.__curPos = curPos   # we need this curPos to be mutable,
-                             #   so make sure its a list NOT TUPLE
-    self.__facing = facing
-    
-    self.__IMAGES = []
+  @classmethod
+  def INIT(cls, screen, imgs):
+    cls.__screen = screen
+    cls.__IMAGES = []
     for eachImage in imgs:
-      self.__IMAGES.append(pygame.image.load(eachImage).convert_alpha())
+      cls.__IMAGES.append(pygame.image.load(eachImage).convert_alpha())
                              # a dictionary of imgs, where keys coorespond
                              #   to direction player faces
-    self.__rect = pygame.Rect(Square.getScaledLoc(Player.PLR_POS_ONSCRN), \
+    cls.__rect = pygame.Rect(Square.getScaledLoc(Player.PLR_POS_ONSCRN), \
                             (BLOCK_SIZE, BLOCK_SIZE))
+    
+  # NOTE: MAKE SURE that you setup Area to set the Player's
+  #   initial curPos and facing
+  def __init__(self):
+    self.__curPos = Player.DEFAULT_INIT_POS   # this is a LIST, NOT TUPLE (needs to be mutable)
+    self.__facing = Player.DEFAULT_INIT_FACING
     
   ######################################################
     
@@ -64,8 +68,8 @@ class Player():
     self.__curPos[1] = self.__curPos[1] + newRelPos[1]
 
   def drawMe(self):
-    ##print self.__IMAGES[self.__facing]
-    self.__screen.blit(self.__IMAGES[self.__facing], self.__rect)
+    ##print Player.__IMAGES[self.__facing]
+    Player.__screen.blit(Player.__IMAGES[self.__facing], Player.__rect)
 
   '''
   def getFacedPos(self):
@@ -94,8 +98,8 @@ class Player():
 
   # alternative drawMe
   def drawMe(self, tup):
-    self.__screen.create_image(Square.getScaledLoc(self.__curPos), \
-                               image=self.__IMAGES[self.__facing])
+    Player.__screen.create_image(Square.getScaledLoc(self.__curPos), \
+                               image=Player.__IMAGES[self.__facing])
 
   # alternative toString()
   def __str__(self):

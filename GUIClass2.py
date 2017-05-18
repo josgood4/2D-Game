@@ -2,7 +2,6 @@ from Square import *
 from Area import *
 from Player import *
 import pygame
-import csv
 import sys
 #
 # THIS GUIClass2.py works with PyGame in Python 2.7
@@ -14,7 +13,7 @@ import sys
 #                    ifKey() => setWall(False), setMessage(""), changeSquare
 #       Player inventory
 #       make better instructions for the spreadsheet/an actual template
-#       multi-Area support
+#       multi-Area support 
 #       save state
 #####################################################################
 
@@ -25,17 +24,14 @@ BACKGROUND_COLOR = (0,0,0)
 
 AREA_FILE = "areas/AreaTest.csv"
 
-IMG_DIR = "images/"
-
-PLR_IMAGES = ["playerN.gif", "playerS.gif", "playerE.gif", "playerW.gif"]
-for i in range(len(PLR_IMAGES)):
-  PLR_IMAGES[i] = IMG_DIR + PLR_IMAGES[i]
+PLR_IMAGES = ["images/playerN.gif", "images/playerS.gif", \
+              "images/playerE.gif", "images/playerW.gif"]
 
 # These are the images for the Squares
 #   EVERY image must be placed in the images folder,
 #   (so it's accessed via "images/...")
 #   the images should preferably be gifs (especially if transparency is needed
-#   EVERY image name MUST start with "floo", "door", "wall", "inte"
+#   EVERY image name MUST start with "floo", "door", "wall", "inte", "acti"
 IMAGES = ["images/floor_dirt.gif", "images/wall_rock.gif", \
         "images/door_ladder_down.gif", "images/door_ladder_up.gif", \
         "images/interactive_sign.gif", "images/interactive_door.gif", \
@@ -59,20 +55,22 @@ LINE_LIM = 21
 class GUIClass():
   
   def __init__(self):
-    self.__PLR_INIT_POS = [1,1]
-    self.__PLR_INIT_FACE = Player.S
-    
+
+    # setup Pygame and Font stuff:
     pygame.init()
     pygame.font.init()
-    self.__myFont = pygame.font.Font(FONT, FONT_SIZE) #<-FIX ME
+    self.__myFont = pygame.font.Font(FONT, FONT_SIZE)
     self.__screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
     self.__txtBox = pygame.image.load(MESSAGE_BOX_IMG)
 
+    # INIT Square, Player, Area (in that order)
     Square.INIT(self.__screen, IMAGES)
-    self.__me = Player(self.__screen, self.__PLR_INIT_POS, self.__PLR_INIT_FACE, PLR_IMAGES)
-    Area.INIT(self.__screen, self.__me, IMAGES)
-    
-    self.__myA = Area(self.__loadArea())
+    Player.INIT(self.__screen, PLR_IMAGES)
+    Area.INIT(self.__screen, IMAGES)
+
+    # Then make instances of Player and Area (in that order)
+    self.__me = Player()
+    self.__myA = Area(AREA_FILE, self.__me)
     #self.__myA.processData(areaInfo[0])
     #self.__myA.initTest()
 
@@ -138,17 +136,6 @@ class GUIClass():
     self.__myA.drawArea()    
     self.__me.drawMe()  # necessary for changes in direction
 
-  def __loadArea(self):
-    f = open(AREA_FILE)
-    reader = csv.reader(f)
-    
-    rows = []
-    for line in reader:
-      rows.append(line)
-
-    f.close()
-    return rows
-
   ######################################################
 
   def __txtBoxLogic(self):
@@ -185,8 +172,8 @@ class GUIClass():
     pygame.display.update()
     
 
-  # __getMessage returns a list, lines, of the words to be displayed
-  #   where each item in the list is a string of each corresponding line
+  # __getMessage breaks up the message by lines, based on LINE_LIM, defined above
+  #   and returns a list, lines, of those broken-up lines
   def __getMessage(self):
     txt = self.__myA.getSquare(self.__me.getFacedPos()).getMessage()
     ##print txt

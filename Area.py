@@ -1,6 +1,10 @@
 from Square import *
+from Player import *
+import csv
 
 PADDING = 5
+
+DIR_DICT = {"N":Player.N, "S":Player.S, "W":Player.W, "E":Player.E}
 
 # Squares will be identified by their corresponding filename
 #   MAKE SURE ANY Square IMAGES START WITH ONE OF THE FOLLOWING
@@ -10,7 +14,9 @@ IMG_CONSTR = {"floo":(lambda x,y,img:  Square((x,y), img)), \
               "acti":(lambda x,y,img: ASquare((x,y), img)), \
               "inte":(lambda x,y,img: ISquare((x,y), img))  }
 
-MISC_FUNC = {"LOCK":(lambda self,i,j,b: \
+MISC_FUNC = {"PLRI":(lambda self,i,j,face: \
+                     self.setupPlayer(i,j,face)), \
+             "LOCK":(lambda self,i,j,b: \
                      self.getSquare((i,j)).setLocked(bool(b))),\
              "MESS":(lambda self,i,j,strList: \
                      self.getSquare((i,j)).setMessage(" ".join(list(strList)))),\
@@ -23,9 +29,8 @@ MISC_FUNC = {"LOCK":(lambda self,i,j,b: \
 class Area():
   
   @classmethod
-  def INIT(cls, scrn, plr, imgs):
+  def INIT(cls, scrn, imgs):
     cls.__screen = scrn
-    cls.__player = plr
     
     # IMG_CONSTR_DICT maps the name of every image file
     #    to its corresponding constructor
@@ -35,7 +40,10 @@ class Area():
 
   ######################################################################
   
-  def __init__(self, L):
+  def __init__(self, fileName, plr):
+    self.__player = plr
+    L = self.__loadArea(fileName)
+    
     # Setting up the Squares:
     L_SQUARE = L[1:] #ignore first row, as that holds other data
     self.__absAreaL = []
@@ -52,26 +60,36 @@ class Area():
       for j in range(10): #width of screen (in blocks)
         self.__rects[i].append(
           pygame.Rect(Square.getScaledLoc((i,j)), (BLOCK_SIZE, BLOCK_SIZE)))
-    
-    # Setting up other miscellaneous things:
-    # Player Attributes:
-    playerAttr = L[0][0].split()
-    ##print playerAttr
-    self.__PLR_INIT_POS = [int(playerAttr[0]), int(playerAttr[1])]
-    self.__PLR_INIT_FACE = int(playerAttr[2])
 
-    # Setting attributes of "special" Squares
+    # Setting attributes of "special" Squares, as well as setupPlayer()
     #   each "special" attribute is of the form:
     #   FUNC_NAME y_pos x_pos *args
-    for cell in L[0][1:]:
+    for cell in L[0]:
       pts = cell.split()
       if len(pts)>3:
         MISC_FUNC[pts[0]](self, int(pts[1]), int(pts[2]), pts[3:])
+
+        
+  def __loadArea(self, areaFileName):
+    f = open(areaFileName)
+    reader = csv.reader(f)
+    
+    rows = []
+    for line in reader:
+      rows.append(line)
+
+    f.close()
+    return rows
+
+
+  def setupPlayer(self, y, x, facing):
+    self.__player.setFacing(DIR_DICT[facing[0]])
+    self.__player.setCurPos([y,x])
         
   ######################################################################        
 
   def drawArea(self):
-    curPos = Area.__player.getCurPos()
+    curPos = self.__player.getCurPos()
     i0 = 0
     for i in range(curPos[0]-4, curPos[0]+4):
       j0 = 0
@@ -89,11 +107,11 @@ class Area():
     retStr = ""
     for i in range(len(self.__absAreaL)):
       for j in range(len(self.__absAreaL[i])):
-        if not Area.__player.isHere((i,j)):
+        if not self.__player.isHere((i,j)):
           retStr += str(" " if self.__absAreaL[i][j].getType()==Square.FLOOR \
                         else self.__absAreaL[i][j].getType()) #+ "\t"
         else:
-          retStr += str(Area.__player) #+ "\t"
+          retStr += str(self.__player) #+ "\t"
       retStr += "\n"
     return retStr
 
