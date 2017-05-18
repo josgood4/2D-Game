@@ -22,7 +22,6 @@ import sys
 WIN_WIDTH = BLOCK_SIZE*9
 WIN_HEIGHT = BLOCK_SIZE*8
 BACKGROUND_COLOR = (0,0,0)
-LINE_LIM = 28
 
 AREA_FILE = "areas/AreaTest.csv"
 
@@ -32,8 +31,11 @@ PLR_IMAGES = ["playerN.gif", "playerS.gif", "playerE.gif", "playerW.gif"]
 for i in range(len(PLR_IMAGES)):
   PLR_IMAGES[i] = IMG_DIR + PLR_IMAGES[i]
 
-# EVERY image must be placed in the images folder,
+# These are the images for the Squares
+#   EVERY image must be placed in the images folder,
 #   (so it's accessed via "images/...")
+#   the images should preferably be gifs (especially if transparency is needed
+#   EVERY image name MUST start with "floo", "door", "wall", "inte"
 IMAGES = ["images/floor_dirt.gif", "images/wall_rock.gif", \
         "images/door_ladder_down.gif", "images/door_ladder_up.gif", \
         "images/interactive_sign.gif", "images/interactive_door.gif", \
@@ -48,8 +50,9 @@ MESSAGE_BOX_IMG = "images/message_box.gif"
 CONTROLS = {pygame.K_w: Player.N, pygame.K_s: Player.S, \
             pygame.K_a: Player.W, pygame.K_d: Player.E}
 
-FONT = 'PT Serif'
-FONT_SIZE = 40
+FONT = 'Fonts/Pokemon GB.ttf'
+FONT_SIZE = 20
+LINE_LIM = 21
 
 ######################################################
 
@@ -61,10 +64,9 @@ class GUIClass():
     
     pygame.init()
     pygame.font.init()
-    self.__myFont = pygame.font.SysFont(FONT, FONT_SIZE) #<-FIX ME
+    self.__myFont = pygame.font.Font(FONT, FONT_SIZE) #<-FIX ME
     self.__screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
     self.__txtBox = pygame.image.load(MESSAGE_BOX_IMG)
-    #self.__screen.fill(BACKGROUND_COLOR)
 
     Square.INIT(self.__screen, IMAGES)
     self.__me = Player(self.__screen, self.__PLR_INIT_POS, self.__PLR_INIT_FACE, PLR_IMAGES)
@@ -75,11 +77,12 @@ class GUIClass():
     #self.__myA.initTest()
 
     ######################################################
+    #             ACTUAL GAME LOGIC BELOW                #
+    ######################################################
 
     self.__update()
 
     eve = False  #short for eve, not to be confused with the event used below vvv
-    firstLine = True
 
     while True:
       for event in pygame.event.get():
@@ -117,7 +120,7 @@ class GUIClass():
     self.__me.move(self.__me.getRelFacedPos())
     if self.__myA.getSquare(self.__me.getCurPos()).isWall():
       self.__me.move(self.__me.getInvRelPos())
-    if self.__myA.getSquare(self.__me.getCurPos()).isDoor():
+    elif self.__myA.getSquare(self.__me.getCurPos()).isDoor():
       self.__me.setCurPos(self.__myA.getSquare(self.__me.getCurPos()).getLoc2())
     self.__update()
         
@@ -150,32 +153,40 @@ class GUIClass():
 
   def __txtBoxLogic(self):
     lines = self.__getMessage()
+    # display first 2 (or 1) lines
     self.__dispMessage(lines, 0)
     i = 2
-    if len(lines) < i:
-      return None
+    # if there are more lines to display, display them
     while len(lines) > i:
       for event in pygame.event.get():
         if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
           self.__dispMessage(lines, i)
           i += 2
+    # have user hit <e> again to get rid of txtBox
     done = False
     while not(done):
       for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
-          self.__update()
-          done = True
+        done = True if(event.type == pygame.KEYDOWN and event.key == pygame.K_e) else False
+    self.__update()
 
   def __dispMessage(self, lines, idx):
+    # display txtBox
     self.__screen.blit(self.__txtBox, Square.getScaledLoc((6, 0)))
-    txtImg = self.__myFont.render(lines[idx], True, (0,0,0))
-    self.__screen.blit(txtImg, Square.getScaledLoc((6.33, 0.33)))
+    
+    # display top line
+    txtImg = self.__myFont.render(lines[idx], False, (0,0,0))
+    self.__screen.blit(txtImg, Square.getScaledLoc((6.5, 0.33)))
+    
+    # if there's a second line to display, display it
     if len(lines) > idx+1:
-      txtImg2 = self.__myFont.render(lines[idx+1], True, (0,0,0))
-      self.__screen.blit(txtImg2, Square.getScaledLoc((7.00, 0.33)))
+      txtImg2 = self.__myFont.render(lines[idx+1], False, (0,0,0))
+      self.__screen.blit(txtImg2, Square.getScaledLoc((7.25, 0.33)))
+      
     pygame.display.update()
     
 
+  # __getMessage returns a list, lines, of the words to be displayed
+  #   where each item in the list is a string of each corresponding line
   def __getMessage(self):
     txt = self.__myA.getSquare(self.__me.getFacedPos()).getMessage()
     ##print txt
