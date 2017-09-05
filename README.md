@@ -46,4 +46,7 @@ Special instructions make squares do more than act as just "walls" or "floors".
   * Location 2: `LOC2 <row> <col> <row2>, <col2>`
     * Again, same deal with `<row>` and `<col>`
     * `<row2>` and `<col2>` represent the coordinates where the player will be teleported if he/she steps on the square at `<row>, <col>`
+    
+ ### Controls
+ To move the player, use the WASD keys. You can also interact with some objects using the E key
   
