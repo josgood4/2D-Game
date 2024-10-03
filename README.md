@@ -3,7 +3,9 @@ A framework for the implementation of a Pokemon-style two-dimensional game
 
 ## Prerequisites:
 - Python 2.7.12
-- Pygame 1.9
+  - Tested with Python 3, works with that too!
+- Pygame ~~1.9~~ 2.6.1
+- Tkinter 3.12.7 (may need to install python-tk)
 
 ## Creating an Area: An Overview
 1) Download [this template](https://docs.google.com/spreadsheets/d/1N7aVqXMlO4WnsL-LR1LV_OpQzQNBnMpR2YgeEsVCMSQ/edit?usp=sharing)
